@@ -98,6 +98,5 @@ else
   # /usr/src/tensorrt/bin/trtexec --onnx=${onnx_model} --dumpLayerInfo --profilingVerbosity=detailed
 	/usr/src/tensorrt/bin/trtexec --onnx=${onnx_model} \
 		  --fp16 \
-		  --precisionConstraints=obey \
 		  --saveEngine=${output_file}
 fi
