@@ -5,7 +5,7 @@ input [
   {
     name: "image"
     data_type: TYPE_FP32
-    dims: [ 1, 10, 3, 280, 504 ]
+    dims: [ 1, 2, 3, 280, 504 ]
   }
 ]
 
@@ -13,22 +13,22 @@ output [
   {
     name: "depth"
     data_type: TYPE_FP32
-    dims: [ 1, 10, 280, 504 ]
+    dims: [ 1, 2, 280, 504 ]
   },
   {
     name: "depth_conf"
     data_type: TYPE_FP32
-    dims: [ 1, 10, 280, 504 ]
+    dims: [ 1, 2, 280, 504 ]
   },
   {
     name: "intrinsics"
     data_type: TYPE_FP32
-    dims: [ 1, 10, 3, 3 ]
+    dims: [ 1, 2, 3, 3 ]
   },
   {
     name: "extrinsics"
     data_type: TYPE_FP32
-    dims: [ 1, 10, 3, 4 ]
+    dims: [ 1, 2, 3, 4 ]
   }
 ]
 
@@ -39,4 +39,4 @@ instance_group [
   }
 ]
 
-default_model_filename: "da3_small_10_504x280.onnx"
+default_model_filename: "da3_small_2_504x280.onnx"

@@ -62,12 +62,12 @@ fi
 # fi
 
 mkdir -p /repo/model_repository_trt/depthanything3_trt/1
-output_file=/repo/model_repository_trt/depthanything3_trt/1/da3_small_10_504x280.plan
+output_file=/repo/model_repository_trt/depthanything3_trt/1/da3_small_2_504x280.plan
 if [ -f ${output_file} ]; then
   echo "============== DA3 plan file exist =============="
 else
   echo "============== Create DA3 plan file =============="
-  onnx_model=/repo/model_repository/depthanything3_onnx/1/da3_small_10_504x280.onnx
+  onnx_model=/repo/model_repository/depthanything3_onnx/1/da3_small_2_504x280.onnx
   # /usr/src/tensorrt/bin/trtexec --onnx=${onnx_model} --dumpLayerInfo --profilingVerbosity=detailed
 	/usr/src/tensorrt/bin/trtexec --onnx=${onnx_model} \
 		  --fp16 \
