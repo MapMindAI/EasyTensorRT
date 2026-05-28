@@ -93,12 +93,14 @@ def parse_args():
     parser.add_argument("--triton-url", default="0.0.0.0:8001", help="Triton gRPC endpoint")
     parser.add_argument("--model-key", default="salad", help="Substring used to find model name")
     parser.add_argument("--model-version", default="1", help="Triton model version")
+    parser.add_argument("--image", default=None, help="Single input image path (enables single-image mode)")
     parser.add_argument("--image-dir", default="assets", help="Input image folder")
     parser.add_argument(
         "--extensions",
         default="jpg,jpeg,png,bmp,webp",
         help="Comma-separated image extensions to include",
     )
+    parser.add_argument("--output-npy", default="data/salad_descriptor.npy", help="Single-image output descriptor .npy path")
     parser.add_argument("--output-descriptors", default="data/salad_descriptors.npy", help="Output descriptors .npy path")
     parser.add_argument("--output-matrix", default="data/salad_distance_matrix.npy", help="Output distance matrix .npy path")
     parser.add_argument("--output-matrix-csv", default="data/salad_distance_matrix.csv", help="Output distance matrix .csv path")
@@ -172,22 +174,29 @@ def save_matrix_png(matrix, labels, output_path):
     plt.close(fig)
 
 
-if __name__ == "__main__":
-    args = parse_args()
-    configure_logging(level=args.log_level)
+def run_single_image(args, client):
+    image = cv2.imread(args.image)
+    if image is None:
+        raise FileNotFoundError(f"Cannot read image: {args.image}")
 
+    t0 = time.time() * 1000
+    descriptor = client.run(image)
+    t1 = time.time() * 1000
+
+    np.save(args.output_npy, descriptor)
+    print(descriptor[0][:10])
+
+    logger.info("Single-image inference used %.3fms", t1 - t0)
+    logger.info("descriptor shape: %s, dtype: %s", descriptor.shape, descriptor.dtype)
+    logger.info("Saved descriptor to %s", args.output_npy)
+
+
+def run_folder_matrix(args, client):
     image_paths = find_images(args.image_dir, args.extensions)
     if len(image_paths) == 0:
         raise FileNotFoundError(
             f"No images found in '{args.image_dir}' with extensions: {args.extensions}"
         )
-
-    client = SaladClient(
-        triton_url=args.triton_url,
-        model_key=args.model_key,
-        model_version=args.model_version,
-        use_imagenet_norm=not args.no_imagenet_norm,
-    )
 
     logger.info("Found %d images in %s", len(image_paths), args.image_dir)
     t0 = time.time() * 1000
@@ -231,3 +240,20 @@ if __name__ == "__main__":
     logger.info("Saved distance matrix to %s and %s", args.output_matrix, args.output_matrix_csv)
     logger.info("Saved distance matrix heatmap to %s", args.output_matrix_png)
     logger.info("Saved image index map to %s", args.output_image_list)
+
+
+if __name__ == "__main__":
+    args = parse_args()
+    configure_logging(level=args.log_level)
+
+    client = SaladClient(
+        triton_url=args.triton_url,
+        model_key=args.model_key,
+        model_version=args.model_version,
+        use_imagenet_norm=not args.no_imagenet_norm,
+    )
+
+    if args.image:
+        run_single_image(args, client)
+    else:
+        run_folder_matrix(args, client)
