@@ -41,6 +41,12 @@ This repo solves that by:
 * [SuperPoint](https://github.com/rpautrat/SuperPoint)
 * [LightGlue](https://github.com/cvg/lightglue)
 * [Depth-Anything-3](https://github.com/ByteDance-Seed/Depth-Anything-3) with [Depth-Anything-V3-ONNX](https://huggingface.co/gggliuye/Depth-Anything-V3-ONNX)
+* [SegFormer-B0](https://huggingface.co/nvidia/segformer-b0-finetuned-ade-512-512)
+  (ADE20K semantic segmentation; sky is class 2). The weights are under the
+  NVIDIA Source Code License (research / non-commercial), so this model is not
+  for commercial use. Export it with
+  `python model_export/export_segformer_ade20k.py` (needs `torch`,
+  `transformers`, `onnx`).
 
 ## 🏗️ Architecture
 
@@ -90,6 +96,10 @@ python triton_client/depthanything3.py
 ```
 
 ![da3 example](assets/DA3_result.jpg)
+
+```bash
+python triton_client/segformer.py --image assets/notre_dame_1.jpg
+```
 
 
 ## ⚙️ ONNX vs TensorRT
