@@ -103,11 +103,12 @@ fi
 
 mkdir -p /repo/model_repository_trt/segformer_trt/1
 output_file=/repo/model_repository_trt/segformer_trt/1/segformer_b0_ade20k_512x512.plan
-if [ -f ${output_file} ]; then
+onnx_model=/repo/model_repository/segformer_onnx/1/segformer_b0_ade20k_512x512.onnx
+if [ -f ${output_file} ] && [ ${output_file} -nt ${onnx_model} ]; then
   echo "============== SegFormer plan file exist =============="
 else
   echo "============== Create SegFormer plan file =============="
-  onnx_model=/repo/model_repository/segformer_onnx/1/segformer_b0_ade20k_512x512.onnx
+  rm -f ${output_file}
 	/usr/src/tensorrt/bin/trtexec --onnx=${onnx_model} \
 		  --fp16 \
 		  --precisionConstraints=obey \
