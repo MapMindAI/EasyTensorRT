@@ -64,8 +64,8 @@ class SegformerClient:
     def run(self, image_bgr):
         """Per-pixel ADE20K class indices at the input image's resolution.
 
-        The graph returns logits at stride 4; the argmax is upsampled with
-        nearest-neighbour so a label maps to whole pixels.
+        The graph returns full-resolution logits, which are classified before
+        being mapped back to the input image's dimensions.
         """
         height, width = image_bgr.shape[:2]
         x = self._preprocess(image_bgr)

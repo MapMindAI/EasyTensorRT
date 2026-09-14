@@ -1,8 +1,8 @@
 """Export SegFormer-B0 (ADE20K) to ONNX for the `segformer_onnx` Triton model.
 
 The client does the preprocessing (BGR->RGB, 512x512, ImageNet mean/std), so the
-graph takes an already-normalized NCHW float32 tensor and returns the 150-class
-ADE20K logits at stride 4. Sky is class index 2.
+graph takes an already-normalized NCHW float32 tensor and returns full-resolution
+150-class ADE20K logits. Sky is class index 2.
 
 Usage:
     python model_export/export_segformer_ade20k.py
@@ -12,6 +12,7 @@ from pathlib import Path
 
 import numpy as np
 import torch
+import torch.nn.functional as functional
 from transformers import SegformerForSemanticSegmentation
 
 MODEL_ID = "nvidia/segformer-b0-finetuned-ade-512-512"
@@ -32,7 +33,10 @@ class SegformerLogits(torch.nn.Module):
         self.model = model
 
     def forward(self, pixel_values):
-        return self.model(pixel_values=pixel_values).logits
+        logits = self.model(pixel_values=pixel_values).logits
+        return functional.interpolate(
+            logits, size=pixel_values.shape[-2:], mode="bilinear", align_corners=False
+        )
 
 
 def main():

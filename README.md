@@ -46,7 +46,7 @@ This repo solves that by:
   NVIDIA Source Code License (research / non-commercial), so this model is not
   for commercial use. Export it with
   `python model_export/export_segformer_ade20k.py` (needs `torch`,
-  `transformers`, `onnx`).
+  `transformers`, `onnx`). It returns 512×512 logits, matching the model input.
 
 ## 🏗️ Architecture
 
